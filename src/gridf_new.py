@@ -63,7 +63,8 @@ class Diagonal_model:
         cons = []
         score = 0
         a, b, c = est
-        dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+        # dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+        dst = lambda x_y: abs(a * x_y[0] + b * x_y[1] + c) / sqrt(a*a+b*b)
         l1 = None
         l2 = None
         for p in self.data:
@@ -79,8 +80,10 @@ class Diagonal_model:
 
         return score, cons
 
-def intersection((a1, b1, c1), (a2, b2, c2)):
+def intersection(line1, line2):
     """Intersection of two lines, given by coefficients in their equations."""
+    a1, b1, c1 = line1
+    a2, b2, c2 = line2
     delim = float(a1 * b2 - b1 * a2)
     if delim == 0:
         return None
@@ -90,9 +93,8 @@ def intersection((a1, b1, c1), (a2, b2, c2)):
 
 class Point:
     """Class that represents a point in 2D."""
-    def __init__(self, (x, y)):
-        self.x = x
-        self.y = y
+    def __init__(self, x_y):
+        self.x, self.y = x_y
 
     def __getitem__(self, key):
         if key == 0:
@@ -118,12 +120,13 @@ class Line:
     each intersection has two lines that go through it.
     """
 
-    def __init__(self, (a, b, c)):
-        self.a, self.b, self.c = (a, b, c)
+    def __init__(self, abc):
+        self.a, self.b, self.c = abc
         self.points = []
 
     @classmethod
-    def from_ad(cls, (a, d), size):
+    def from_ad(cls, a_d, size):
+        a, d = a_d
         p = linef.line_from_angl_dist((a, d), size)
         return cls(ransac.points_to_line(*p))
 
@@ -241,7 +244,8 @@ def find(lines, size, l1, l2, bounds, hough, show_all, do_something, logger):
             import matplotlib.pyplot as pyplot
             from PIL import Image
 
-            def plot_line_g((a, b, c), max_x):
+            def plot_line_g(abc, max_x):
+                a, b, c = abc
                 find_y = lambda x: - (c + a * x) / b
                 pyplot.plot([0, max_x], [find_y(0), find_y(max_x)], color='b')
 

@@ -1,3 +1,4 @@
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <math.h>
 
@@ -176,7 +177,32 @@ static PyMethodDef myModule_methods[] = {
 	{NULL, NULL}
 };
 
-void initpcf()
+// void initpcf()
+// {
+// 		(void) Py_InitModule("pcf", myModule_methods);
+// }
+
+static struct PyModuleDef myModule = {
+    PyModuleDef_HEAD_INIT,
+    "pcf",   /* name of module */
+    NULL,    /* module documentation, may be NULL */
+    -1,      /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    myModule_methods
+};
+
+// PyMODINIT_FUNC PyInit_pcf(void) {
+//     PyObject* m;
+
+//     m = PyModule_Create(&myModule);
+//     if (m == NULL)
+//         return NULL;
+
+//     /* Add other module level functions, constants here */
+
+//     return m;
+// }
+
+void PyInit_pcf(void)
 {
-		(void) Py_InitModule("pcf", myModule_methods);
+    (void) PyModule_Create(&myModule);
 }

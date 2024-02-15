@@ -6,7 +6,7 @@ from math import sin, cos, pi
 
 try:
     from PIL import Image, ImageDraw
-except ImportError, msg:
+except ImportError as msg:
     print >> sys.stderr, msg
     sys.exit(1)
 
@@ -63,7 +63,8 @@ def run_ransac(image):
 
     dist = 3 
     [(line, points), (line2, points2)] = ransac.ransac_multi(2, data, dist, 250)
-    line_to_points = lambda (a, b, c), x: (x, (a*x + c) / (- b))
+    # line_to_points = lambda (a, b, c), x: (x, (a*x + c) / (- b))
+    line_to_points = lambda a_b_c, x: (x, (a_b_c[0]*x + a_b_c[2]) / (- a_b_c[1]))
     # TODO width should not be here vvv
     # TODO refactor gridf to use standard equations instead of points
     line = [line_to_points(line, 0), line_to_points(line, width - 1)]
@@ -104,9 +105,10 @@ def find_lines(image, show_image, logger):
 
     return lines, l1, l2, bounds, hough # TODO
 
-def line_from_angl_dist((angle, distance), size):
+def line_from_angl_dist(angle_distance, size):
     """Take *angle* and *distance* (from the center of the image) of a line and
     size of the image. Return the line represented by two points."""
+    angle, distance = angle_distance
     if pi / 4 < angle < 3 * pi / 4:
         y1 = - size[1] / 2
         x1 = int(round((y1 * cos(angle) + distance) / sin(angle))) + size[0] / 2

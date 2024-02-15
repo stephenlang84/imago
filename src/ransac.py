@@ -7,14 +7,17 @@ import numpy as NP
 # TODO comments
 # TODO threshold
 
-def points_to_line((x1, y1), (x2, y2)):
+def points_to_line(point1, point2):
     """Take two points, return coefficitiens for line that connects them."""
+    x1, y1 = point1
+    x2, y2 = point2
     return (y2 - y1, x1 - x2, x2 * y1 - x1 * y2)
 
 def filter_near(data, line, distance):
     """Find points in *data* that are closer than *distance* to *line*."""
     a, b, c = line
-    dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+    # dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+    dst = lambda x_y: abs(a * x_y[0] + b * x_y[1] + c) / sqrt(a*a+b*b)
     is_near = lambda p: dst(p) <= distance
     return [p for p in data if is_near(p)]
 
@@ -45,7 +48,8 @@ class Linear_model:
         cons = []
         score = 0
         a, b, c = est
-        dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+        # dst = lambda (x, y): abs(a * x + b * y + c) / sqrt(a*a+b*b)
+        dst = lambda x_y: abs(a * x_y[0] + b * x_y[1] + c) / sqrt(a*a+b*b)
         for p in self.data:
             d = dst(p)
             if d <= dist:

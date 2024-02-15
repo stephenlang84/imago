@@ -167,8 +167,9 @@ def rgb2lumsat(color):
         saturation = 1. - ((3. * min(color)) / sum(color)) 
     return luma, saturation
 
-def stone_color_raw(image, (x, y)):
+def stone_color_raw(image, x_y):
     """Given image and coordinates, return stone color."""
+    x, y = x_y
     size = 3 
     points = []
     for i in range(-size, size + 1):
